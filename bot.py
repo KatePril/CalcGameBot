@@ -1,8 +1,7 @@
 import logging
 from aiogram import Bot, Dispatcher, executor, types
 from decouple import config
-from random import randint
-from expressions import generate_list
+from expressions import give_expression
 
 API_TOKEN = config('API_TOKEN')
 
@@ -29,7 +28,7 @@ async def plus(call: types.CallbackQuery):
     expressions = expressions + 1
     correct = correct + 1
     points = points + 1
-    await call.message.answer('+1 points')
+    await call.message.answer('+1 points\n/next\n/stop_game')
     
 @dp.callback_query_handler(text_contains='wrong_') 
 async def minus(call: types.CallbackQuery):
@@ -38,7 +37,9 @@ async def minus(call: types.CallbackQuery):
     incorrect = incorrect + 1
     if points > 0:
         points = points - 1
-        await call.message.answer('-1 points')
+        await call.message.answer('-1 points\n/next\n/stop_game')
+    else:
+        await call.message.answer('0 points\n/next\n/stop_game')
     
 @dp.message_handler(commands='stop_game')
 async def end_game(message: types.Message):
@@ -64,21 +65,7 @@ async def echo(message: types.Message):
 
 @dp.message_handler()
 async def echo(message: types.Message):
-    await message.answer(message.text)   
-    
-def give_expression():
-    expressions = generate_list()
-    correct_answer_index = randint(0, 3)
-    expected_result = eval(expressions[correct_answer_index])
-    markup = types.InlineKeyboardMarkup()
-    
-    for i in range(len(expressions)):
-        if i == correct_answer_index:
-            markup.add(types.InlineKeyboardButton(expressions[i], callback_data='correct_answer'))
-        else:
-            markup.add(types.InlineKeyboardButton(expressions[i], callback_data='wrong_answer'))
-    
-    return expected_result, markup
+    await message.answer(message.text)
             
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)

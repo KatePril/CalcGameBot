@@ -32,7 +32,7 @@ def give_expression():
     markup = types.InlineKeyboardMarkup()
     
     for i in range(len(expressions)):
-        if i == expected_result:
+        if i == correct_answer_index:
             markup.add(types.InlineKeyboardButton(expressions[i], callback_data='correct_answer'))
         else:
             markup.add(types.InlineKeyboardButton(expressions[i], callback_data='wrong_answer'))
